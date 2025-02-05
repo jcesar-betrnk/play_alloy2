@@ -16,13 +16,14 @@ async fn main() -> Result<()> {
     // Ensure `anvil` is available in $PATH.
     let provider = ProviderBuilder::new().on_anvil_with_wallet();
 
-
+    // code: https://etherscan.io/address/0xdac17f958d2ee523a2206206994597c13d831ec7#code
     let contract_address = address!("dAC17F958D2ee523a2206206994597C13D831ec7");
 
     println!("parsing abi..");
     let transfer_abi = JsonAbi::parse([
         "function transfer(address recipient, uint256 amount) public returns (bool)",
         "function totalSupply() view returns (uint256)",
+        "function balanceOf(address who) returns (uint256)",
     ])?;
     println!("Done parsing abi..");
 
@@ -30,11 +31,9 @@ async fn main() -> Result<()> {
     let contract = ContractInstance::new(contract_address, provider.clone(), Interface::new(transfer_abi.clone()));
 
     // Set the number to 42.
-    let number_value = DynSolValue::from(U256::from(42));
+    let number_value = DynSolValue::from(U256::from(42_000_000));
     let recepient = alloy::primitives::Address::random();
 
-    // this is alice address
-    //let recepient = address!("70997970C51812dc3A010C7d01b50e0d17dc79C8");
 
     // this call works on anvil, but not on the anvil forked
     // if called on the anvil fork provider: error code -32603: EVM error InvalidFEOpcode
@@ -46,6 +45,12 @@ async fn main() -> Result<()> {
     let forked_provider =
         ProviderBuilder::new().on_anvil_with_wallet_and_config(|anvil| anvil.fork(rpc_url))?;
     let contract = ContractInstance::new(contract_address, forked_provider, Interface::new(transfer_abi));
+
+    // this is alice address
+    let alice = address!("70997970C51812dc3A010C7d01b50e0d17dc79C8");
+    let alice_balance = contract.function("balanceOf", &[DynSolValue::from(alice)])?.call().await?;
+    dbg!(alice_balance);
+
     // this call only works on provider that is forked from mainnet? eth.
     let balance: Vec<DynSolValue> = contract.function("totalSupply", &[])?.call().await?;
     dbg!(balance);
