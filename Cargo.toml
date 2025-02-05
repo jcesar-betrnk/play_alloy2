@@ -1,0 +1,13 @@
+[package]
+name = "play_alloy2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+alloy = { version = "0.11.0", features = [
+    "full",
+    "provider-anvil-node",
+    "rand",
+] }
+eyre = "0.6.12"
+tokio = { version = "1.43.0", features = ["full"] }
