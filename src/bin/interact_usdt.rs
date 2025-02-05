@@ -17,7 +17,7 @@ async fn main() -> Result<()> {
     let provider = ProviderBuilder::new().on_anvil_with_wallet();
 
     // code: https://etherscan.io/address/0xdac17f958d2ee523a2206206994597c13d831ec7#code
-    let contract_address = address!("dAC17F958D2ee523a2206206994597C13D831ec7");
+    let contract_address = address!("0xdAC17F958D2ee523a2206206994597C13D831ec7");
 
     println!("parsing abi..");
     let transfer_abi = JsonAbi::parse([
@@ -47,7 +47,7 @@ async fn main() -> Result<()> {
     let contract = ContractInstance::new(contract_address, forked_provider, Interface::new(transfer_abi));
 
     // this is alice address
-    let alice = address!("70997970C51812dc3A010C7d01b50e0d17dc79C8");
+    let alice = address!("0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
     let alice_balance = contract.function("balanceOf", &[DynSolValue::from(alice)])?.call().await?;
     dbg!(alice_balance);
 
