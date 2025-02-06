@@ -31,7 +31,7 @@ async fn main() -> Result<()> {
     let contract_address = address!("0xdAC17F958D2ee523a2206206994597C13D831ec7");
 
     println!("parsing abi..");
-    let transfer_abi = JsonAbi::parse([
+    let usdt_abi = JsonAbi::parse([
         "function transfer(address recipient, uint256 amount) public returns (bool)",
         "function totalSupply() view returns (uint256)",
         "function balanceOf(address who) returns (uint256)",
@@ -40,7 +40,7 @@ async fn main() -> Result<()> {
     println!("Done parsing abi..");
 
     // Create a new `ContractInstance` of the `Counter` contract from the abi
-    let contract = ContractInstance::new(contract_address, provider.clone(), Interface::new(transfer_abi.clone()));
+    let contract = ContractInstance::new(contract_address, provider.clone(), Interface::new(usdt_abi.clone()));
 
     // Set the number to 42.
     let number_value = DynSolValue::from(U256::from(42_000_000));
@@ -61,7 +61,7 @@ async fn main() -> Result<()> {
     let rpc_url = "https://eth.merkle.io";
     let forked_provider =
         ProviderBuilder::new().on_anvil_with_wallet_and_config(|anvil| anvil.fork(rpc_url))?;
-    let contract = ContractInstance::new(contract_address, forked_provider, Interface::new(transfer_abi));
+    let contract = ContractInstance::new(contract_address, forked_provider, Interface::new(usdt_abi));
 
     // this is alice address
     let alice_balance = contract.function("balanceOf", &[DynSolValue::from(alice)])?.call().await?;
