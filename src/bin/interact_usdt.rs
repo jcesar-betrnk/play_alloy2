@@ -110,7 +110,7 @@ async fn send_transaction(provider: &impl Provider, dest_addr: Address, source_a
     let tx = TransactionRequest::default()
         .with_to(dest_addr)
         .with_from(source_addr)
-        .with_gas_price(20_000_000_000)
+        .with_gas_price(1_000_000_000)
         .with_gas_limit(21_000)
         .with_value(amount);
     let dest_balance = provider.get_balance(dest_addr).await;
@@ -127,9 +127,9 @@ async fn send_transaction(provider: &impl Provider, dest_addr: Address, source_a
 
     println!("Transaction sent with nonce: {}", pending_tx.nonce());
 
-    let dest_after_balance = provider.get_balance(dest_addr).await;
+    let dest_after_balance = provider.get_balance(dest_addr).await?;
     dbg!(dest_after_balance);
-    let source_after_balance = provider.get_balance(source_addr).await;
+    let source_after_balance = provider.get_balance(source_addr).await?;
     dbg!(source_after_balance);
 
     println!("Transaction sent with nonce: {}", pending_tx.nonce());
@@ -143,7 +143,7 @@ async fn send_signed_transaction(provider: &impl Provider, dest_addr: Address, s
         .with_to(dest_addr)
         .with_nonce(0)
         .with_from(source_addr)
-        .with_gas_price(20_000_000_000)
+        .with_gas_price(900_000_000)
         .with_gas_limit(21_000)
         .with_value(amount);
     let dest_balance = provider.get_balance(dest_addr).await?;
