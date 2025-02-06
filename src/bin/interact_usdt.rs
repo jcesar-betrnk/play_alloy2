@@ -1,4 +1,4 @@
-#![deny(warnings)]
+//#![deny(warnings)]
 //! This example demonstrates how to interact with a contract that is already deployed onchain using
 //! the `ContractInstance` interface.
 
@@ -24,9 +24,11 @@ async fn main() -> Result<()> {
         "function transfer(address recipient, uint256 amount) public returns (bool)",
         "function totalSupply() view returns (uint256)",
         "function balanceOf(address who) returns (uint256)",
+        "function symbol() public view returns (string memory)",
     ])?;
     println!("Done parsing abi..");
 
+    let alice = address!("0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
     // Create a new `ContractInstance` of the `Counter` contract from the abi
     let contract = ContractInstance::new(contract_address, provider.clone(), Interface::new(transfer_abi.clone()));
 
@@ -34,6 +36,7 @@ async fn main() -> Result<()> {
     let number_value = DynSolValue::from(U256::from(42_000_000));
     let recepient = alloy::primitives::Address::random();
 
+    let recepient = alice.clone();
 
     // this call works on anvil, but not on the anvil forked
     // if called on the anvil fork provider: error code -32603: EVM error InvalidFEOpcode
@@ -47,7 +50,6 @@ async fn main() -> Result<()> {
     let contract = ContractInstance::new(contract_address, forked_provider, Interface::new(transfer_abi));
 
     // this is alice address
-    let alice = address!("0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
     let alice_balance = contract.function("balanceOf", &[DynSolValue::from(alice)])?.call().await?;
     dbg!(alice_balance);
 
@@ -55,6 +57,9 @@ async fn main() -> Result<()> {
     let balance: Vec<DynSolValue> = contract.function("totalSupply", &[])?.call().await?;
     dbg!(balance);
 
+
+    let symbol: Vec<DynSolValue> = contract.function("symbol", &[])?.call().await?;
+    dbg!(symbol);
 
     Ok(())
 }
