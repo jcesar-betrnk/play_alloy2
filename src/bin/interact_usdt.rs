@@ -33,6 +33,7 @@ async fn main() -> Result<()> {
     println!("parsing abi..");
     let usdt_abi = JsonAbi::parse([
         "function transfer(address recipient, uint256 amount) public returns (bool)",
+        "function transferFrom(address _from, address _to, uint _value) public returns (bool)",
         "function totalSupply() view returns (uint256)",
         "function balanceOf(address who) returns (uint256)",
         "function symbol() public view returns (string memory)",
@@ -41,6 +42,14 @@ async fn main() -> Result<()> {
 
     // Create a new `ContractInstance` of the `Counter` contract from the abi
     let contract = ContractInstance::new(contract_address, provider.clone(), Interface::new(usdt_abi.clone()));
+
+
+    let phrase = "work man brother plunge mystery proud hollow address reunion sauce theory bonus";
+    let index = 0u32;
+    let password = "pwd123";
+
+    let created_wallet = create_wallet(index, phrase, password)?;
+    dbg!(&created_wallet);
 
     // Set the number to 42.
     let number_value = DynSolValue::from(U256::from(42_000_000));
@@ -54,10 +63,11 @@ async fn main() -> Result<()> {
 
     // this call works on anvil, but not on the anvil forked
     // if called on the anvil fork provider: error code -32603: EVM error InvalidFEOpcode
-    let tx_hash = contract.function("transfer", &[DynSolValue::from(created_wallet2.address()), number_value])?.send().await?.watch().await?;
+    let tx_hash = contract.function("transfer", &[DynSolValue::from(created_wallet2.address()), number_value.clone()])?.send().await?.watch().await?;
+    println!("Done simple transfer...{tx_hash}");
 
-
-    println!("Done...{tx_hash}");
+    let tx_hash = contract.function("transferFrom", &[DynSolValue::from(created_wallet2.address()), DynSolValue::from(created_wallet.address()), number_value])?.send().await?.watch().await?;
+    println!("Done calling transferFrom...{tx_hash}");
 
     // query the balance of the recepient
     // ISSUE:
