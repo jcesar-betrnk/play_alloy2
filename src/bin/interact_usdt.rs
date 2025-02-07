@@ -56,7 +56,20 @@ async fn main() -> Result<()> {
     // if called on the anvil fork provider: error code -32603: EVM error InvalidFEOpcode
     let tx_hash = contract.function("transfer", &[DynSolValue::from(created_wallet2.address()), number_value])?.send().await?.watch().await?;
 
+
     println!("Done...{tx_hash}");
+
+    // query the balance of the recepient
+    // ISSUE:
+    // - [ ] Error: contract call to `balanceOf` returned no data ("0x"); the called address might not be a contract
+    //   - Maybe because the contract is not deployed on this provider instance yet.
+    //      - but then why I was able to call `transfer` function
+    //          - maybe that `transfer` function is on the native eth token
+    //   - [ ] Try running on an anvil fork that has advanced into a block where the USDT contract
+    //   has already been deployed.
+    //
+    //let recepient_balance = contract.function("balanceOf", &[DynSolValue::from(created_wallet2.address())])?.call().await?;
+    //dbg!(recepient_balance);
 
     let rpc_url = "https://eth.merkle.io";
     let forked_provider =
@@ -67,7 +80,11 @@ async fn main() -> Result<()> {
     let alice_balance = contract.function("balanceOf", &[DynSolValue::from(alice)])?.call().await?;
     dbg!(alice_balance);
 
-    // this is alice address
+    // query the balance of the recepient
+    // returns 0, because this is a different provider. Alice and Bob preset accounts don't exist
+    // here.
+    // - [ ] Try connecting into the main-net and use USDT to see if it can sucessfully do a
+    // transfer and query balance.
     let recepient_balance = contract.function("balanceOf", &[DynSolValue::from(created_wallet2.address())])?.call().await?;
     dbg!(recepient_balance);
 
