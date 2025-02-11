@@ -33,7 +33,7 @@ async fn main() -> Result<()> {
     println!("parsing abi..");
     let usdt_abi = JsonAbi::parse([
         "function transfer(address recipient, uint256 amount) public returns (bool)",
-        "function transferFrom(address _from, address _to, uint _value) public returns (bool)",
+        "function transferFrom2(address _from, address _to, uint _value) public returns (bool)",
         "function totalSupply() view returns (uint256)",
         "function balanceOf(address who) returns (uint256)",
         "function symbol() public view returns (string memory)",
@@ -66,7 +66,7 @@ async fn main() -> Result<()> {
     let tx_hash = contract.function("transfer", &[DynSolValue::from(created_wallet2.address()), number_value.clone()])?.send().await?.watch().await?;
     println!("Done simple transfer...{tx_hash}");
 
-    let tx_hash = contract.function("transferFrom", &[DynSolValue::from(created_wallet2.address()), DynSolValue::from(created_wallet.address()), number_value])?.send().await?.watch().await?;
+    let tx_hash = contract.function("transferFrom2", &[DynSolValue::from(created_wallet2.address()), DynSolValue::from(created_wallet.address()), number_value])?.send().await?.watch().await?;
     println!("Done calling transferFrom...{tx_hash}");
 
     // query the balance of the recepient
